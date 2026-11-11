@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Layers, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function SignupPage() {
@@ -65,7 +66,12 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-zinc-100">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        className="sm:mx-auto sm:w-full sm:max-w-sm"
+      >
         <Link href="/" className="flex items-center justify-center gap-2.5 mb-8">
           <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-950 flex items-center justify-center shadow-sm">
             <Layers className="w-4 h-4 stroke-[2.5]" />
@@ -78,9 +84,14 @@ export default function SignupPage() {
         <p className="mt-1 text-center text-xs text-zinc-400">
           Set up a new isolated multi-tenant inventory workspace
         </p>
-      </div>
+      </motion.div>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.32, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+        className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm"
+      >
         <div className="bg-zinc-900/60 border border-zinc-800/80 py-6 px-6 shadow-sm rounded-xl backdrop-blur-xl">
           {error && (
             <div className="mb-4 p-3 rounded-lg bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
@@ -193,7 +204,7 @@ export default function SignupPage() {
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
