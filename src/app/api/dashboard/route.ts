@@ -9,21 +9,23 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const org = await prisma.organization.findUnique({
-      where: { id: session.organizationId },
-    });
+    // Parallelize organization and products queries for fast response
+    const [org, products] = await Promise.all([
+      prisma.organization.findUnique({
+        where: { id: session.organizationId },
+        select: { defaultLowStockThreshold: true },
+      }),
+      prisma.product.findMany({
+        where: { organizationId: session.organizationId },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
     if (!org) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
     const defaultThreshold = org.defaultLowStockThreshold ?? 5;
-
-    // Fetch all products for the tenant
-    const products = await prisma.product.findMany({
-      where: { organizationId: session.organizationId },
-      orderBy: { createdAt: 'desc' },
-    });
 
     const totalProducts = products.length;
     let totalQuantityOnHand = 0;

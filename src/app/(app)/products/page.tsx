@@ -16,10 +16,14 @@ import {
 } from 'lucide-react';
 import { ProductItem } from '@/lib/types';
 
+// Fast in-memory SWR cache for instant route navigation
+let cachedProducts: ProductItem[] | null = null;
+let cachedThreshold: number = 5;
+
 export default function ProductsPage() {
-  const [products, setProducts] = useState<ProductItem[]>([]);
-  const [defaultThreshold, setDefaultThreshold] = useState<number>(5);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<ProductItem[]>(() => cachedProducts || []);
+  const [defaultThreshold, setDefaultThreshold] = useState<number>(() => cachedThreshold);
+  const [loading, setLoading] = useState(() => !cachedProducts);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'low-stock' | 'in-stock'>('all');
 
@@ -35,23 +39,34 @@ export default function ProductsPage() {
   const [adjustQty, setAdjustQty] = useState('');
   const [adjustNote, setAdjustNote] = useState('');
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (isBackground = false) => {
     try {
       const res = await fetch('/api/products');
       if (res.ok) {
         const json = await res.json();
-        setProducts(json.products || []);
-        setDefaultThreshold(json.defaultLowStockThreshold || 5);
+        const fresh = json.products || [];
+        const threshold = json.defaultLowStockThreshold || 5;
+        cachedProducts = fresh;
+        cachedThreshold = threshold;
+        setProducts(fresh);
+        setDefaultThreshold(threshold);
       }
     } catch (err) {
       console.error('Error fetching products:', err);
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    if (cachedProducts) {
+      // Revalidate in background
+      fetchProducts(true);
+    } else {
+      fetchProducts(false);
+    }
   }, []);
 
   const handleAdjustStock = async (e: React.FormEvent) => {

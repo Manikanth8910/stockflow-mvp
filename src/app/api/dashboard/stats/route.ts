@@ -9,19 +9,28 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const org = await prisma.organization.findUnique({
-      where: { id: session.organizationId },
-    });
+    // Parallelize queries for fast dashboard response
+    const [org, products] = await Promise.all([
+      prisma.organization.findUnique({
+        where: { id: session.organizationId },
+        select: { name: true, defaultLowStockThreshold: true },
+      }),
+      prisma.product.findMany({
+        where: { organizationId: session.organizationId },
+        select: {
+          id: true,
+          quantityOnHand: true,
+          sellingPrice: true,
+          lowStockThreshold: true,
+        },
+      }),
+    ]);
 
     if (!org) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
     const defaultThreshold = org.defaultLowStockThreshold ?? 5;
-
-    const products = await prisma.product.findMany({
-      where: { organizationId: session.organizationId },
-    });
 
     let totalUnitsInStock = 0;
     let lowStockProductsCount = 0;

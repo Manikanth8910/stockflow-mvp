@@ -24,12 +24,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     fetch('/api/auth/me')
       .then((res) => {
         if (!res.ok) throw new Error('Not authenticated');
         return res.json();
       })
       .then((data) => {
+        if (!mounted) return;
         setUser(data.user);
         setLoading(false);
         if (!data.user?.organizationId && pathname !== '/organizations/new') {
@@ -37,9 +39,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => {
-        router.push('/login');
+        if (mounted) router.push('/login');
       });
-  }, [router, pathname]);
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);

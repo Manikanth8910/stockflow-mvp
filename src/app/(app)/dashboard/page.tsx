@@ -16,9 +16,12 @@ import {
 } from 'lucide-react';
 import { DashboardMetrics, ProductItem } from '@/lib/types';
 
+// Fast in-memory SWR cache for instant dashboard transitions
+let cachedDashboard: DashboardMetrics | null = null;
+
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardMetrics | null>(() => cachedDashboard);
+  const [loading, setLoading] = useState(() => !cachedDashboard);
   const [seeding, setSeeding] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -29,22 +32,29 @@ export default function DashboardPage() {
   const [isAdjusting, setIsAdjusting] = useState<boolean>(false);
   const [adjustError, setAdjustError] = useState<string>('');
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isBackground = false) => {
     try {
       const res = await fetch('/api/dashboard');
       if (res.ok) {
         const json = await res.json();
+        cachedDashboard = json;
         setData(json);
       }
     } catch (err) {
       console.error('Failed to load dashboard:', err);
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    if (cachedDashboard) {
+      fetchDashboardData(true);
+    } else {
+      fetchDashboardData(false);
+    }
   }, []);
 
   const handleSeedDemo = async () => {

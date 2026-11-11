@@ -13,12 +13,6 @@ export async function GET(req: NextRequest) {
   const filter = searchParams.get('filter')?.trim() || 'all'; // all | low-stock | in-stock
 
   try {
-    const org = await prisma.organization.findUnique({
-      where: { id: session.organizationId },
-    });
-
-    const defaultThreshold = org?.defaultLowStockThreshold ?? 5;
-
     // Multi-tenant query: strictly scoped by organizationId
     const whereClause: any = {
       organizationId: session.organizationId,
@@ -31,10 +25,19 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const rawProducts = await prisma.product.findMany({
-      where: whereClause,
-      orderBy: { createdAt: 'desc' },
-    });
+    // Parallelize queries for lowest latency
+    const [org, rawProducts] = await Promise.all([
+      prisma.organization.findUnique({
+        where: { id: session.organizationId },
+        select: { defaultLowStockThreshold: true },
+      }),
+      prisma.product.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+
+    const defaultThreshold = org?.defaultLowStockThreshold ?? 5;
 
     const products = rawProducts.map((p) => {
       const effectiveThreshold = p.lowStockThreshold !== null ? p.lowStockThreshold : defaultThreshold;
