@@ -38,8 +38,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           router.push('/organizations/new');
         }
       })
-      .catch(() => {
-        if (mounted) router.push('/login');
+      .catch(async () => {
+        if (mounted) {
+          try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+          } catch {}
+          router.push('/login');
+        }
       });
 
     return () => {
