@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                        String              @id @default(cuid())
+  name                      String
+  defaultLowStockThreshold  Int                 @default(5)
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+
+  users                     User[]
+  products                  Product[]
+  stockAdjustmentLogs       StockAdjustmentLog[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  passwordHash   String
+  name           String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+}
+
+model Product {
+  id                 String               @id @default(cuid())
+  organizationId     String
+  organization       Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name               String
+  sku                String
+  description        String?
+  quantityOnHand     Int                  @default(0)
+  costPrice          Float?
+  sellingPrice       Float?
+  lowStockThreshold  Int?
+  lastUpdatedBy      String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  stockAdjustmentLogs StockAdjustmentLog[]
+
+  @@unique([organizationId, sku])
+  @@index([organizationId])
+  @@index([organizationId, name])
+}
+
+model StockAdjustmentLog {
+  id               String       @id @default(cuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantityChange   Int
+  previousQuantity Int
+  newQuantity      Int
+  note             String?
+  adjustedBy       String?
+  createdAt        DateTime     @default(now())
+
+  @@index([organizationId])
+  @@index([productId])
+}
