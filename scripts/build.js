@@ -24,6 +24,17 @@ try {
   console.log('Step 3/4: Seeding initial demo data...');
   execSync('node prisma/seed.js', { stdio: 'inherit', env: process.env });
 
+  // Copy seeded database to public directory so Next.js bundles it in standalone & Vercel serverless builds
+  const publicDir = path.join(process.cwd(), 'public');
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
+  const sourceDb = path.join(process.cwd(), 'prisma', 'dev.db');
+  if (fs.existsSync(sourceDb)) {
+    fs.copyFileSync(sourceDb, path.join(publicDir, 'stockflow.db'));
+    console.log('StockFlow Build: Copied seeded database to public/stockflow.db for Serverless deployment');
+  }
+
   console.log('Step 4/4: Building Next.js application...');
   execSync('npx next build', { stdio: 'inherit', env: process.env });
 

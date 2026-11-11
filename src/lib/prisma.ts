@@ -6,13 +6,21 @@ function getDatabaseUrl(): string {
   if (process.env.VERCEL) {
     const tmpDb = '/tmp/stockflow.db';
     if (!fs.existsSync(tmpDb)) {
-      try {
-        const rootDb = path.join(process.cwd(), 'prisma', 'dev.db');
-        if (fs.existsSync(rootDb)) {
-          fs.copyFileSync(rootDb, tmpDb);
+      const candidates = [
+        path.join(process.cwd(), 'public', 'stockflow.db'),
+        path.join(process.cwd(), 'prisma', 'dev.db'),
+        path.join(process.cwd(), 'dev.db'),
+      ];
+      for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) {
+          try {
+            fs.copyFileSync(candidate, tmpDb);
+            console.log(`Copied database from ${candidate} to ${tmpDb}`);
+            break;
+          } catch (e) {
+            console.error('Failed to copy db to /tmp on Vercel:', e);
+          }
         }
-      } catch (e) {
-        console.error('Failed to copy db to /tmp on Vercel:', e);
       }
     }
     return `file:${tmpDb}`;
