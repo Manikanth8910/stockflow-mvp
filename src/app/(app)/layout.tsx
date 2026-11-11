@@ -10,11 +10,8 @@ import {
   Settings as SettingsIcon,
   LogOut,
   Building2,
-  Menu,
-  X,
   Loader2,
   ChevronDown,
-  Check,
 } from 'lucide-react';
 import { SessionUser } from '@/lib/types';
 
@@ -23,7 +20,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
@@ -67,7 +63,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Generate initials for avatar
   const initials = user?.name
     ? user.name
         .split(' ')
@@ -96,7 +91,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
 
-        {/* Tenant Organization Switcher */}
+        {/* Tenant Organization Indicator */}
         <div className="p-3 border-b border-zinc-800/60">
           <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/40 border border-zinc-700/40 hover:bg-zinc-800/70 transition-colors cursor-default">
             <div className="flex items-center gap-2.5 overflow-hidden">
@@ -180,59 +175,60 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Mobile Top Header */}
-      <header className="md:hidden flex items-center justify-between px-4 h-14 bg-zinc-900/90 border-b border-zinc-800 sticky top-0 z-40 backdrop-blur-md">
-        <div className="flex items-center gap-2.5">
+      {/* Mobile Top App Bar */}
+      <header className="md:hidden flex items-center justify-between px-4 h-14 bg-zinc-950/90 border-b border-zinc-800/80 sticky top-0 z-40 backdrop-blur-md">
+        <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-6 h-6 rounded bg-zinc-100 text-zinc-950 flex items-center justify-center">
             <Layers className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
-          <span className="font-semibold text-sm text-zinc-100">StockFlow</span>
-          <span className="text-[10px] font-mono text-zinc-500 bg-zinc-800 px-1 py-0.5 rounded">
-            {user?.organizationName}
-          </span>
+          <span className="font-semibold text-xs text-zinc-100 tracking-tight">StockFlow</span>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="truncate max-w-[100px]">{user?.organizationName}</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            title="Sign out"
+            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100"
+          >
+            {isLoggingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
+          </button>
         </div>
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-zinc-400 hover:text-zinc-100 rounded-lg hover:bg-zinc-800"
-        >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
       </header>
 
-      {/* Mobile Dropdown Navigation */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-zinc-900 border-b border-zinc-800 px-4 py-3 space-y-2">
-          {navItems.map((item) => (
+      {/* Main Workspace Body with mobile bottom padding */}
+      <main className="flex-1 min-h-[calc(100vh-3.5rem)] md:min-h-screen bg-zinc-950 overflow-y-auto pb-20 md:pb-0">
+        <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">{children}</div>
+      </main>
+
+      {/* Mobile Bottom Navigation Bar (App-style) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 border-t border-zinc-800/80 px-4 py-2 backdrop-blur-lg flex items-center justify-around">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive =
+            pathname === item.href ||
+            (item.href === '/products' && pathname.startsWith('/products'));
+
+          return (
             <Link
               key={item.name}
               href={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium ${
-                pathname === item.href
-                  ? 'bg-zinc-800 text-zinc-100 font-semibold'
-                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg text-[10px] font-medium transition-colors ${
+                isActive
+                  ? 'text-zinc-100 font-semibold'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <item.icon className="w-4 h-4" />
-              {item.name}
+              <Icon className={`w-4 h-4 mb-1 ${isActive ? 'text-zinc-100' : 'text-zinc-400'}`} />
+              <span>{item.name}</span>
             </Link>
-          ))}
-          <div className="pt-2 border-t border-zinc-800 flex justify-between items-center text-xs text-zinc-400">
-            <span className="truncate">{user?.email}</span>
-            <button
-              onClick={handleLogout}
-              className="text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1"
-            >
-              <LogOut className="w-3.5 h-3.5" /> Sign out
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Main Workspace Body */}
-      <main className="flex-1 min-h-[calc(100vh-3.5rem)] md:min-h-screen bg-zinc-950 overflow-y-auto">
-        <div className="max-w-6xl mx-auto p-4 sm:p-8 lg:p-10">{children}</div>
-      </main>
+          );
+        })}
+      </nav>
     </div>
   );
 }

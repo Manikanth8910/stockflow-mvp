@@ -9,10 +9,8 @@ import {
   SlidersHorizontal,
   Edit2,
   Trash2,
-  CheckCircle2,
   X,
   Loader2,
-  AlertCircle,
   Database,
   ArrowUpRight,
 } from 'lucide-react';
@@ -143,22 +141,22 @@ export default function ProductsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-zinc-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-zinc-800/80">
         <div>
-          <h1 className="text-xl font-semibold text-zinc-100 tracking-tight">Products</h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <h1 className="text-lg sm:text-xl font-semibold text-zinc-100 tracking-tight">Products</h1>
+          <p className="text-xs text-zinc-400 mt-0.5">
             Maintain item catalog, pricing, SKU codes, and reorder levels.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           {products.length === 0 && !loading && (
             <button
               onClick={handleSeedDemo}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 text-xs font-medium transition-colors"
             >
               <Database className="w-3.5 h-3.5 text-zinc-400" />
-              Import Sample Data
+              <span className="hidden xs:inline">Import</span> Demo
             </button>
           )}
           <Link
@@ -180,7 +178,7 @@ export default function ProductsPage() {
             placeholder="Search by product name or SKU..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-8 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
+            className="w-full pl-9 pr-8 py-2 sm:py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-sm sm:text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
           />
           {searchTerm && (
             <button
@@ -193,10 +191,10 @@ export default function ProductsPage() {
         </div>
 
         {/* Filter Segmented Controls */}
-        <div className="flex items-center p-0.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs">
+        <div className="flex items-center overflow-x-auto p-0.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs self-start sm:self-auto">
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors ${
+            className={`px-3 py-1 rounded-md font-medium whitespace-nowrap transition-colors ${
               statusFilter === 'all'
                 ? 'bg-zinc-800 text-zinc-100 shadow-sm'
                 : 'text-zinc-400 hover:text-zinc-200'
@@ -206,7 +204,7 @@ export default function ProductsPage() {
           </button>
           <button
             onClick={() => setStatusFilter('low-stock')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors ${
+            className={`px-3 py-1 rounded-md font-medium whitespace-nowrap transition-colors ${
               statusFilter === 'low-stock'
                 ? 'bg-zinc-800 text-amber-300 shadow-sm'
                 : 'text-zinc-400 hover:text-zinc-200'
@@ -216,7 +214,7 @@ export default function ProductsPage() {
           </button>
           <button
             onClick={() => setStatusFilter('in-stock')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors ${
+            className={`px-3 py-1 rounded-md font-medium whitespace-nowrap transition-colors ${
               statusFilter === 'in-stock'
                 ? 'bg-zinc-800 text-emerald-400 shadow-sm'
                 : 'text-zinc-400 hover:text-zinc-200'
@@ -227,7 +225,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Catalog Table */}
+      {/* Catalog Container */}
       <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="py-24 text-center">
@@ -251,113 +249,194 @@ export default function ProductsPage() {
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-800/30 text-zinc-400 uppercase tracking-wider text-[10px] font-mono border-b border-zinc-800/80">
-                <tr>
-                  <th className="py-2.5 px-5">Product Name</th>
-                  <th className="py-2.5 px-5">SKU</th>
-                  <th className="py-2.5 px-5 text-right">On Hand</th>
-                  <th className="py-2.5 px-5 text-center">Status</th>
-                  <th className="py-2.5 px-5 text-right">Cost Price</th>
-                  <th className="py-2.5 px-5 text-right">Selling Price</th>
-                  <th className="py-2.5 px-5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
-                {filteredProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-zinc-800/30 transition-colors">
-                    <td className="py-3 px-5 font-medium text-zinc-100 max-w-xs">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-zinc-800/30 text-zinc-400 uppercase tracking-wider text-[10px] font-mono border-b border-zinc-800/80">
+                  <tr>
+                    <th className="py-2.5 px-5">Product Name</th>
+                    <th className="py-2.5 px-5">SKU</th>
+                    <th className="py-2.5 px-5 text-right">On Hand</th>
+                    <th className="py-2.5 px-5 text-center">Status</th>
+                    <th className="py-2.5 px-5 text-right">Cost Price</th>
+                    <th className="py-2.5 px-5 text-right">Selling Price</th>
+                    <th className="py-2.5 px-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+                  {filteredProducts.map((p) => (
+                    <tr key={p.id} className="hover:bg-zinc-800/30 transition-colors">
+                      <td className="py-3 px-5 font-medium text-zinc-100 max-w-xs">
+                        <Link
+                          href={`/products/${p.id}`}
+                          className="hover:text-zinc-300 transition-colors inline-flex items-center gap-1 font-medium"
+                        >
+                          <span>{p.name}</span>
+                          <ArrowUpRight className="w-3 h-3 text-zinc-500 opacity-60" />
+                        </Link>
+                        {p.description && (
+                          <p className="text-[11px] text-zinc-500 truncate mt-0.5 font-normal">
+                            {p.description}
+                          </p>
+                        )}
+                      </td>
+
+                      <td className="py-3 px-5 font-mono text-[11px] text-zinc-400">
+                        <span className="px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-700/40">
+                          {p.sku}
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-5 text-right font-mono font-semibold tabular-nums text-zinc-100">
+                        {p.quantityOnHand}
+                      </td>
+
+                      <td className="py-3 px-5 text-center">
+                        {p.isLowStock ? (
+                          p.quantityOnHand === 0 ? (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                              Out of Stock
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                              Low Stock (≤{p.effectiveThreshold})
+                            </span>
+                          )
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Healthy
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="py-3 px-5 text-right font-mono tabular-nums text-zinc-400">
+                        {p.costPrice !== null ? `$${p.costPrice.toFixed(2)}` : '—'}
+                      </td>
+
+                      <td className="py-3 px-5 text-right font-mono tabular-nums font-semibold text-zinc-200">
+                        {p.sellingPrice !== null ? `$${p.sellingPrice.toFixed(2)}` : '—'}
+                      </td>
+
+                      <td className="py-3 px-5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => {
+                              setAdjustProduct(p);
+                              setAdjustQty('+1');
+                              setAdjustNote('');
+                              setFormError('');
+                            }}
+                            title="Adjust stock units"
+                            className="p-1 rounded bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/60 transition-colors"
+                          >
+                            <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-400" />
+                          </button>
+
+                          <Link
+                            href={`/products/${p.id}/edit`}
+                            title="Edit product"
+                            className="p-1 rounded bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/60 transition-colors"
+                          >
+                            <Edit2 className="w-3.5 h-3.5 text-zinc-400" />
+                          </Link>
+
+                          <button
+                            onClick={() => setDeleteProduct(p)}
+                            title="Delete product"
+                            className="p-1 rounded bg-zinc-800/80 hover:bg-rose-500/20 text-zinc-400 hover:text-rose-400 border border-zinc-700/60 transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="md:hidden divide-y divide-zinc-800/80">
+              {filteredProducts.map((p) => (
+                <div key={p.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
                       <Link
                         href={`/products/${p.id}`}
-                        className="hover:text-zinc-300 transition-colors inline-flex items-center gap-1 font-medium"
+                        className="font-medium text-xs text-zinc-100 hover:text-zinc-300 inline-flex items-center gap-1"
                       >
                         <span>{p.name}</span>
-                        <ArrowUpRight className="w-3 h-3 text-zinc-500 opacity-60" />
+                        <ArrowUpRight className="w-3 h-3 text-zinc-500" />
                       </Link>
-                      {p.description && (
-                        <p className="text-[11px] text-zinc-500 truncate mt-0.5 font-normal">
-                          {p.description}
-                        </p>
-                      )}
-                    </td>
-
-                    <td className="py-3 px-5 font-mono text-[11px] text-zinc-400">
-                      <span className="px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-700/40">
-                        {p.sku}
-                      </span>
-                    </td>
-
-                    <td className="py-3 px-5 text-right font-mono font-semibold tabular-nums text-zinc-100">
-                      {p.quantityOnHand}
-                    </td>
-
-                    <td className="py-3 px-5 text-center">
-                      {p.isLowStock ? (
-                        p.quantityOnHand === 0 ? (
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                            Out of Stock
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                            Low Stock (≤{p.effectiveThreshold})
-                          </span>
-                        )
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          Healthy
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="font-mono text-[10px] px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-700/60 text-zinc-400">
+                          {p.sku}
                         </span>
-                      )}
-                    </td>
-
-                    <td className="py-3 px-5 text-right font-mono tabular-nums text-zinc-400">
-                      {p.costPrice !== null ? `$${p.costPrice.toFixed(2)}` : '—'}
-                    </td>
-
-                    <td className="py-3 px-5 text-right font-mono tabular-nums font-semibold text-zinc-200">
-                      {p.sellingPrice !== null ? `$${p.sellingPrice.toFixed(2)}` : '—'}
-                    </td>
-
-                    <td className="py-3 px-5 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => {
-                            setAdjustProduct(p);
-                            setAdjustQty('+1');
-                            setAdjustNote('');
-                            setFormError('');
-                          }}
-                          title="Adjust stock units"
-                          className="p-1 rounded bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/60 transition-colors"
-                        >
-                          <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-400" />
-                        </button>
-
-                        <Link
-                          href={`/products/${p.id}/edit`}
-                          title="Edit product"
-                          className="p-1 rounded bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/60 transition-colors"
-                        >
-                          <Edit2 className="w-3.5 h-3.5 text-zinc-400" />
-                        </Link>
-
-                        <button
-                          onClick={() => setDeleteProduct(p)}
-                          title="Delete product"
-                          className="p-1 rounded bg-zinc-800/80 hover:bg-rose-500/20 text-zinc-400 hover:text-rose-400 border border-zinc-700/60 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {p.isLowStock ? (
+                          p.quantityOnHand === 0 ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Out of stock
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> Low stock
+                            </span>
+                          )
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Healthy
+                          </span>
+                        )}
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <div className="font-mono font-bold text-sm text-zinc-100">
+                        {p.quantityOnHand} <span className="text-[10px] text-zinc-500 font-normal">units</span>
+                      </div>
+                      <div className="text-[10px] text-emerald-400 font-mono font-medium">
+                        {p.sellingPrice !== null ? `$${p.sellingPrice.toFixed(2)}` : '—'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions on Mobile */}
+                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 text-xs">
+                    <button
+                      onClick={() => {
+                        setAdjustProduct(p);
+                        setAdjustQty('+1');
+                        setAdjustNote('');
+                        setFormError('');
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-medium"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-400" /> Adjust
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/products/${p.id}/edit`}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-medium"
+                      >
+                        <Edit2 className="w-3.5 h-3.5 text-zinc-400" /> Edit
+                      </Link>
+                      <button
+                        onClick={() => setDeleteProduct(p)}
+                        className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:text-rose-400 border border-zinc-700"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -390,7 +469,7 @@ export default function ProductsPage() {
                   value={adjustQty}
                   onChange={(e) => setAdjustQty(e.target.value)}
                   placeholder="e.g. +10 or -3"
-                  className="w-full px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-zinc-400"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 font-mono text-sm sm:text-xs focus:outline-none focus:ring-1 focus:ring-zinc-400"
                 />
               </div>
 
@@ -403,7 +482,7 @@ export default function ProductsPage() {
                   value={adjustNote}
                   onChange={(e) => setAdjustNote(e.target.value)}
                   placeholder="e.g. Restock shipment, damaged write-off"
-                  className="w-full px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-400"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 text-sm sm:text-xs focus:outline-none focus:ring-1 focus:ring-zinc-400"
                 />
               </div>
 
