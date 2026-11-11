@@ -143,12 +143,12 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-5 text-center text-xs text-zinc-400 pt-4 border-t border-zinc-800/80">
-            Don't have an organization account?{' '}
+            Don't have an account?{' '}
             <Link
               href="/signup"
               className="font-medium text-zinc-200 hover:text-white underline underline-offset-4"
             >
-              Create organization
+              Sign up
             </Link>
           </div>
         </div>
