@@ -309,7 +309,12 @@ export default function DashboardPage() {
                             OUT OF STOCK
                           </span>
                         )}
-                        <span>{item.name}</span>
+                        <Link
+                          href={`/products/${item.id}`}
+                          className="hover:text-emerald-400 transition-colors font-medium text-white"
+                        >
+                          {item.name}
+                        </Link>
                       </div>
                       {item.description && (
                         <p className="text-[11px] text-slate-500 truncate max-w-xs">{item.description}</p>

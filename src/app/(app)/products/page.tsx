@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import {
   Package,
   Plus,
@@ -336,7 +337,12 @@ export default function ProductsPage() {
                   <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
                     {/* Name & Description */}
                     <td className="py-3.5 px-5 font-medium text-white max-w-xs">
-                      <div className="font-semibold">{p.name}</div>
+                      <Link
+                        href={`/products/${p.id}`}
+                        className="font-semibold text-white hover:text-emerald-400 transition-colors inline-block"
+                      >
+                        {p.name}
+                      </Link>
                       {p.description && (
                         <p className="text-[11px] text-slate-400 truncate mt-0.5">
                           {p.description}
