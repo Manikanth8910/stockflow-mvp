@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const [org, products] = await Promise.all([
       prisma.organization.findUnique({
         where: { id: session.organizationId },
-        select: { defaultLowStockThreshold: true },
+        select: { id: true, name: true, defaultLowStockThreshold: true },
       }),
       prisma.product.findMany({
         where: { organizationId: session.organizationId },
