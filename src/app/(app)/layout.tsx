@@ -4,15 +4,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Boxes,
-  LayoutDashboard,
+  Layers,
+  LayoutGrid,
   Package,
-  Settings,
+  Settings as SettingsIcon,
   LogOut,
   Building2,
   Menu,
   X,
   Loader2,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
 import { SessionUser } from '@/lib/types';
 
@@ -51,91 +53,127 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const navItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
     { name: 'Products', href: '/products', icon: Package },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-3" />
-        <p className="text-slate-400 text-sm">Loading StockFlow workspace...</p>
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-zinc-100">
+        <Loader2 className="w-6 h-6 animate-spin text-zinc-400 mb-2.5" />
+        <p className="text-zinc-500 text-xs font-mono tracking-tight">Loading workspace...</p>
       </div>
     );
   }
 
+  // Generate initials for avatar
+  const initials = user?.name
+    ? user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : user?.email?.slice(0, 2).toUpperCase() || 'SF';
+
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col md:flex-row text-slate-100">
-      {/* Sidebar for Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 shrink-0 select-none">
-        {/* Brand */}
-        <div className="h-16 px-6 flex items-center gap-3 border-b border-slate-800">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/20">
-            <Boxes className="w-5 h-5 text-slate-950 font-bold" />
-          </div>
-          <div>
-            <span className="font-bold text-lg text-white tracking-tight">StockFlow</span>
-            <span className="block text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">
-              MVP Inventory
-            </span>
+    <div className="min-h-screen bg-zinc-950 flex flex-col md:flex-row text-zinc-100 antialiased selection:bg-zinc-800">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-zinc-900/60 border-r border-zinc-800/80 shrink-0 select-none backdrop-blur-xl">
+        {/* Brand Header */}
+        <div className="h-14 px-5 flex items-center justify-between border-b border-zinc-800/60">
+          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-zinc-950 flex items-center justify-center shadow-sm group-hover:bg-white transition-colors">
+              <Layers className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-semibold text-sm tracking-tight text-zinc-100">StockFlow</span>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded border border-zinc-700/40">
+                v0.1
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Tenant Organization Switcher */}
+        <div className="p-3 border-b border-zinc-800/60">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/40 border border-zinc-700/40 hover:bg-zinc-800/70 transition-colors cursor-default">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-6 h-6 rounded bg-zinc-700/60 flex items-center justify-center text-zinc-300 shrink-0">
+                <Building2 className="w-3.5 h-3.5" />
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-medium text-zinc-200 truncate leading-tight">
+                  {user?.organizationName || 'Default Org'}
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="text-[10px] font-mono text-zinc-400">Production</span>
+                </div>
+              </div>
+            </div>
+            <ChevronDown className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
           </div>
         </div>
 
-        {/* Current Org Indicator */}
-        <div className="p-4 mx-3 my-4 rounded-xl bg-slate-800/60 border border-slate-800 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-            <Building2 className="w-4 h-4" />
+        {/* Navigation Items */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">
+            Navigation
           </div>
-          <div className="overflow-hidden">
-            <p className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-              Organization
-            </p>
-            <p className="text-sm font-semibold text-white truncate" title={user?.organizationName}>
-              {user?.organizationName || 'My Organization'}
-            </p>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-3 space-y-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive =
+              pathname === item.href ||
+              (item.href === '/products' && pathname.startsWith('/products'));
+
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-emerald-500 text-slate-950 font-semibold shadow-sm shadow-emerald-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                    ? 'bg-zinc-800 text-zinc-100 font-semibold shadow-sm border border-zinc-700/50'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-slate-400'}`} />
-                {item.name}
+                <div className="flex items-center gap-2.5">
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-zinc-100' : 'text-zinc-400'}`} />
+                  <span>{item.name}</span>
+                </div>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />}
               </Link>
             );
           })}
         </nav>
 
-        {/* User Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-900/50">
-          <div className="flex items-center justify-between">
-            <div className="overflow-hidden mr-2">
-              <p className="text-xs font-semibold text-white truncate">{user?.name || 'Seller'}</p>
-              <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
+        {/* User Profile & Sign Out */}
+        <div className="p-3 border-t border-zinc-800/60 bg-zinc-900/40">
+          <div className="flex items-center justify-between p-1.5 rounded-lg">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700/60 flex items-center justify-center text-[11px] font-mono font-medium text-zinc-300 shrink-0">
+                {initials}
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-medium text-zinc-200 truncate leading-tight">
+                  {user?.name || 'Administrator'}
+                </p>
+                <p className="text-[10px] text-zinc-500 truncate font-mono mt-0.5">
+                  {user?.email}
+                </p>
+              </div>
             </div>
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              title="Logout"
-              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+              title="Sign out"
+              className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
             >
               {isLoggingOut ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
               )}
             </button>
           </div>
@@ -143,55 +181,57 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Mobile Top Header */}
-      <header className="md:hidden flex items-center justify-between px-4 h-16 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+      <header className="md:hidden flex items-center justify-between px-4 h-14 bg-zinc-900/90 border-b border-zinc-800 sticky top-0 z-40 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-            <Boxes className="w-5 h-5 text-slate-950" />
+          <div className="w-6 h-6 rounded bg-zinc-100 text-zinc-950 flex items-center justify-center">
+            <Layers className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
-          <span className="font-bold text-white">StockFlow</span>
+          <span className="font-semibold text-sm text-zinc-100">StockFlow</span>
+          <span className="text-[10px] font-mono text-zinc-500 bg-zinc-800 px-1 py-0.5 rounded">
+            {user?.organizationName}
+          </span>
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-slate-400 hover:text-white"
+          className="p-2 text-zinc-400 hover:text-zinc-100 rounded-lg hover:bg-zinc-800"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </header>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Dropdown Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 py-4 space-y-3">
-          <div className="text-xs text-slate-400 pb-2 border-b border-slate-800">
-            Org: <span className="text-white font-medium">{user?.organizationName}</span> ({user?.email})
-          </div>
+        <div className="md:hidden bg-zinc-900 border-b border-zinc-800 px-4 py-3 space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium ${
                 pathname === item.href
-                  ? 'bg-emerald-500 text-slate-950 font-semibold'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-zinc-800 text-zinc-100 font-semibold'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
               }`}
             >
               <item.icon className="w-4 h-4" />
               {item.name}
             </Link>
           ))}
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 text-rose-400 hover:bg-rose-500/10 rounded-lg text-sm font-medium"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
+          <div className="pt-2 border-t border-zinc-800 flex justify-between items-center text-xs text-zinc-400">
+            <span className="truncate">{user?.email}</span>
+            <button
+              onClick={handleLogout}
+              className="text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sign out
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 min-h-[calc(100vh-4rem)] md:min-h-screen bg-slate-950 overflow-y-auto">
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">{children}</div>
+      {/* Main Workspace Body */}
+      <main className="flex-1 min-h-[calc(100vh-3.5rem)] md:min-h-screen bg-zinc-950 overflow-y-auto">
+        <div className="max-w-6xl mx-auto p-4 sm:p-8 lg:p-10">{children}</div>
       </main>
     </div>
   );

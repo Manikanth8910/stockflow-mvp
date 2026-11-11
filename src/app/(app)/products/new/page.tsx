@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, PackagePlus, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -58,33 +58,33 @@ export default function CreateProductPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pb-6 border-b border-zinc-800/80">
         <Link
           href="/products"
-          className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+          className="p-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-100 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Create Product</h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Add a new item to your organization inventory catalog
+          <h1 className="text-xl font-semibold text-zinc-100 tracking-tight">Create Product</h1>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Add a new catalog item to your organization inventory
           </p>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center gap-2.5 text-rose-300 text-xs">
+        <div className="p-3.5 rounded-lg bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
           <span>{error}</span>
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-6 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              Product Name <span className="text-rose-400">*</span>
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+              Product name <span className="text-zinc-500">*</span>
             </label>
             <input
               type="text"
@@ -92,14 +92,14 @@ export default function CreateProductPage() {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g. Ergonomic Standing Desk"
-              className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                SKU (Stock Keeping Unit) <span className="text-rose-400">*</span>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                SKU (Stock Keeping Unit) <span className="text-zinc-500">*</span>
               </label>
               <input
                 type="text"
@@ -107,14 +107,14 @@ export default function CreateProductPage() {
                 value={formData.sku}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                 placeholder="e.g. DSK-STND-01"
-                className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400"
               />
-              <p className="text-[11px] text-slate-500 mt-1">Unique within your organization</p>
+              <p className="text-[10px] text-zinc-500 mt-1">Unique within your organization</p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                Initial Quantity on Hand <span className="text-rose-400">*</span>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Initial quantity on hand <span className="text-zinc-500">*</span>
               </label>
               <input
                 type="number"
@@ -122,15 +122,15 @@ export default function CreateProductPage() {
                 required
                 value={formData.quantityOnHand}
                 onChange={(e) => setFormData({ ...formData, quantityOnHand: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                Cost Price ($)
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Cost price ($)
               </label>
               <input
                 type="number"
@@ -139,13 +139,13 @@ export default function CreateProductPage() {
                 value={formData.costPrice}
                 onChange={(e) => setFormData({ ...formData, costPrice: e.target.value })}
                 placeholder="0.00"
-                className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                Selling Price ($)
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Selling price ($)
               </label>
               <input
                 type="number"
@@ -154,62 +154,51 @@ export default function CreateProductPage() {
                 value={formData.sellingPrice}
                 onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
                 placeholder="0.00"
-                className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              Low Stock Alert Threshold (Units)
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+              Low stock reorder threshold
             </label>
             <input
               type="number"
               min="0"
               value={formData.lowStockThreshold}
               onChange={(e) => setFormData({ ...formData, lowStockThreshold: e.target.value })}
-              placeholder={`Leave blank to use organization default (${defaultThreshold})`}
-              className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder={`Leave blank to use organization default (${defaultThreshold} units)`}
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400"
             />
-            <p className="text-[11px] text-slate-500 mt-1">
-              Triggers low-stock warning on dashboard when Quantity &le; this number.
-            </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
               Description (Optional)
             </label>
             <textarea
-              rows={3}
+              rows={2}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Product notes, dimensions, manufacturer info..."
-              className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+              placeholder="Product notes or specifications..."
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400 resize-none"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-2 pt-4 border-t border-zinc-800/80">
             <Link
               href="/products"
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+              className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs rounded-lg transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> Creating...
-                </>
-              ) : (
-                <>
-                  <PackagePlus className="w-4 h-4" /> Save Product
-                </>
-              )}
+              {isSubmitting ? 'Saving...' : 'Save Product'}
             </button>
           </div>
         </form>

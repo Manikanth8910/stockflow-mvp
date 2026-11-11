@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Settings as SettingsIcon,
   Building2,
   Sliders,
-  CheckCircle,
+  CheckCircle2,
   AlertCircle,
   Loader2,
-  Sparkles,
   Database,
+  Shield,
+  Layers,
 } from 'lucide-react';
 
 export default function SettingsPage() {
+  const [orgId, setOrgId] = useState('');
   const [orgName, setOrgName] = useState('');
   const [defaultThreshold, setDefaultThreshold] = useState<string>('5');
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,7 @@ export default function SettingsPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.organization) {
+          setOrgId(data.organization.id || '');
           setOrgName(data.organization.name || '');
           setDefaultThreshold(data.organization.defaultLowStockThreshold?.toString() || '5');
         }
@@ -67,7 +69,7 @@ export default function SettingsPage() {
         throw new Error(data.error || 'Failed to update settings');
       }
 
-      setSuccessMessage('Organization settings successfully saved!');
+      setSuccessMessage('Organization policy settings saved successfully.');
     } catch (err: any) {
       setErrorMessage(err.message || 'Error updating settings');
     } finally {
@@ -82,12 +84,12 @@ export default function SettingsPage() {
       const res = await fetch('/api/seed', { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
-        setSeedResult(data.message || 'Demo products successfully populated!');
+        setSeedResult(data.message || 'Sample catalog populated.');
       } else {
-        setSeedResult('Failed to load demo data');
+        setSeedResult('Failed to populate sample data.');
       }
     } catch {
-      setSeedResult('An error occurred while loading demo data');
+      setSeedResult('Network error populating sample data.');
     } finally {
       setSeeding(false);
     }
@@ -95,139 +97,136 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-3" />
-        <p className="text-sm">Loading organization settings...</p>
+      <div className="flex flex-col items-center justify-center py-28 text-zinc-400">
+        <Loader2 className="w-6 h-6 animate-spin text-zinc-400 mb-2.5" />
+        <p className="text-xs font-mono text-zinc-500">Loading organization configuration...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-3xl space-y-8">
-      {/* Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Organization Settings</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Configure default inventory thresholds and organization preferences.
+      {/* Title Header */}
+      <div className="pb-6 border-b border-zinc-800/80">
+        <h1 className="text-xl font-semibold text-zinc-100 tracking-tight">Organization Settings</h1>
+        <p className="text-xs text-zinc-400 mt-1">
+          Configure tenant profile details and global inventory threshold policies.
         </p>
       </div>
 
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-3">
-          <CheckCircle className="w-5 h-5 shrink-0" />
-          <span>{successMessage}</span>
+        <div className="p-3.5 rounded-lg bg-emerald-950/30 border border-emerald-800/50 text-emerald-300 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage('')} className="text-[11px] underline ml-4 hover:text-white">
+            Dismiss
+          </button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
-          <span>{errorMessage}</span>
+        <div className="p-3.5 rounded-lg bg-rose-950/30 border border-rose-800/50 text-rose-300 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage('')} className="text-[11px] underline ml-4 hover:text-white">
+            Dismiss
+          </button>
         </div>
       )}
 
-      {/* Main Settings Form (FR-7) */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center gap-3 pb-5 border-b border-slate-800">
-          <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-            <Sliders className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-base font-bold text-white">Stock Threshold Configuration</h2>
-            <p className="text-xs text-slate-400">
-              PRD FR-7: Global fallback value for products without an explicit threshold.
-            </p>
-          </div>
+      {/* Main Settings Card */}
+      <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-zinc-800/80">
+          <h2 className="text-sm font-semibold text-zinc-100">General Information</h2>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Details identifying this tenant in the StockFlow cluster.
+          </p>
         </div>
 
-        <form onSubmit={handleSaveSettings} className="mt-6 space-y-6">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Organization Name
-            </label>
-            <div className="relative rounded-xl max-w-md">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Building2 className="w-4 h-4" />
-              </div>
+        <form onSubmit={handleSaveSettings} className="p-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Organization Name
+              </label>
               <input
                 type="text"
                 required
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Tenant Identifier
+              </label>
+              <div className="px-3 py-2 bg-zinc-800/50 border border-zinc-700/60 rounded-lg text-xs text-zinc-400 font-mono flex items-center justify-between">
+                <span className="truncate">{orgId}</span>
+                <Shield className="w-3.5 h-3.5 text-zinc-500 shrink-0 ml-2" />
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Default Low Stock Threshold (Units)
-            </label>
-            <div className="max-w-xs">
-              <input
-                type="number"
-                min="0"
-                required
-                value={defaultThreshold}
-                onChange={(e) => setDefaultThreshold(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+          <div className="pt-6 border-t border-zinc-800/80">
+            <div className="max-w-md">
+              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Default Low Stock Reorder Threshold
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min="0"
+                  required
+                  value={defaultThreshold}
+                  onChange={(e) => setDefaultThreshold(e.target.value)}
+                  className="w-32 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-xs text-zinc-100 font-mono focus:outline-none focus:ring-1 focus:ring-zinc-400"
+                />
+                <span className="text-xs text-zinc-400">units</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-2 leading-relaxed">
+                Applies to all products where an explicit per-item threshold has not been set. When quantity on hand drops to or below <span className="text-zinc-200 font-mono font-medium">{defaultThreshold || '5'}</span>, an alert will be triggered on the dashboard.
+              </p>
             </div>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              When a product does not specify its own threshold, StockFlow flags it as{' '}
-              <span className="text-amber-400 font-semibold">Low Stock</span> whenever Quantity on
-              Hand &le; <span className="font-mono text-white font-bold">{defaultThreshold || '5'}</span>.
-            </p>
           </div>
 
-          <div className="pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-end pt-4 border-t border-zinc-800/80">
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs rounded-lg transition-colors disabled:opacity-50"
             >
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              Save Configuration
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Developer / Demo Utilities Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center gap-3 pb-5 border-b border-slate-800">
-          <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
-            <Database className="w-5 h-5" />
-          </div>
+      {/* Developer & Evaluator Tools */}
+      <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-6">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-white">Sample Data Loader</h2>
-            <p className="text-xs text-slate-400">
-              Quickly populate your organization with demo products (Electronics, Accessories, Hardware).
+            <h3 className="text-sm font-semibold text-zinc-200">Evaluation Sandbox Catalog</h3>
+            <p className="text-xs text-zinc-500 mt-1 max-w-md">
+              Populates realistic inventory items (electronics, hardware accessories, healthy and low-stock SKUs) scoped exclusively to your organization.
             </p>
           </div>
-        </div>
-
-        <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <p className="text-xs text-slate-400 leading-relaxed max-w-md">
-            Clicking this will insert realistic sample products (including healthy and low-stock SKUs)
-            scoped strictly to your organization. Existing items will not be overwritten.
-          </p>
           <button
             onClick={handleSeedData}
             disabled={seeding}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-colors disabled:opacity-50 shrink-0"
+            className="px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-medium transition-colors disabled:opacity-50 shrink-0"
           >
-            {seeding ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4 text-amber-400" />
-            )}
-            Populate Demo Catalog
+            {seeding ? 'Populating...' : 'Seed Sample Catalog'}
           </button>
         </div>
 
         {seedResult && (
-          <div className="mt-4 p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-emerald-400">
+          <div className="mt-3.5 p-2.5 rounded bg-zinc-800/70 border border-zinc-700/60 text-xs text-zinc-300 font-mono">
             {seedResult}
           </div>
         )}

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Boxes, Building2, Lock, Mail, User, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Layers, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -64,161 +64,133 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <Boxes className="w-7 h-7 text-slate-950 font-bold" />
-            </div>
-          </Link>
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">
-          Create Organization
+    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-zinc-100">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <Link href="/" className="flex items-center justify-center gap-2.5 mb-8">
+          <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-950 flex items-center justify-center shadow-sm">
+            <Layers className="w-4 h-4 stroke-[2.5]" />
+          </div>
+          <span className="font-semibold text-base tracking-tight text-zinc-100">StockFlow</span>
+        </Link>
+        <h2 className="text-center text-xl font-semibold tracking-tight text-zinc-100">
+          Create an organization
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
-          Get started with StockFlow in 30 seconds
+        <p className="mt-1 text-center text-xs text-zinc-400">
+          Set up a new isolated multi-tenant inventory workspace
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-slate-800/90 border border-slate-700/80 py-8 px-6 shadow-xl rounded-2xl sm:px-10 backdrop-blur-sm">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="bg-zinc-900/60 border border-zinc-800/80 py-6 px-6 shadow-sm rounded-xl backdrop-blur-xl">
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center gap-3 text-rose-300 text-sm">
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
+            <div className="mb-4 p-3 rounded-lg bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
               <span>{error}</span>
             </div>
           )}
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-3.5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Organization Name
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
+                Organization name
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Building2 className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="organizationName"
-                  required
-                  value={formData.organizationName}
-                  onChange={handleChange}
-                  placeholder="e.g. Apex Hardware Supplies"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all"
-                />
-              </div>
+              <input
+                type="text"
+                name="organizationName"
+                required
+                value={formData.organizationName}
+                onChange={handleChange}
+                placeholder="e.g. Apex Hardware Supplies"
+                className="w-full px-3 py-2 bg-zinc-800/80 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Your Full Name
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
+                Your full name
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Jane Doe"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all"
-                />
-              </div>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Jane Doe"
+                className="w-full px-3 py-2 bg-zinc-800/80 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Work Email Address
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
+                Work email address
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="jane@company.com"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all"
-                />
-              </div>
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="jane@company.com"
+                className="w-full px-3 py-2 bg-zinc-800/80 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
                 Password
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="At least 6 characters"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all"
-                />
-              </div>
+              <input
+                type="password"
+                name="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="At least 6 characters"
+                className="w-full px-3 py-2 bg-zinc-800/80 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Confirm Password
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
+                Confirm password
               </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Repeat your password"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all"
-                />
-              </div>
+              <input
+                type="password"
+                name="confirmPassword"
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Repeat password"
+                className="w-full px-3 py-2 bg-zinc-800/80 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
+              />
             </div>
 
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-slate-950 bg-emerald-500 hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 transition-colors"
+                className="w-full flex justify-center items-center gap-1.5 py-2 px-4 rounded-lg text-xs font-semibold text-zinc-950 bg-zinc-100 hover:bg-white focus:outline-none disabled:opacity-50 transition-colors"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Setting up organization...
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Provisioning workspace...
                   </>
                 ) : (
                   <>
-                    Create & Launch <ArrowRight className="w-4 h-4" />
+                    Create organization <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
               </button>
             </div>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-400">
-              Already have an account?{' '}
-              <Link
-                href="/login"
-                className="font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-4"
-              >
-                Sign in
-              </Link>
-            </p>
+          <div className="mt-5 text-center text-xs text-zinc-400 pt-4 border-t border-zinc-800/80">
+            Already have an account?{' '}
+            <Link
+              href="/login"
+              className="font-medium text-zinc-200 hover:text-white underline underline-offset-4"
+            >
+              Sign in
+            </Link>
           </div>
         </div>
       </div>
