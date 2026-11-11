@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/signup', '/api/auth/login', '/api/auth/signup'];
+const PUBLIC_PATHS = ['/', '/login', '/signup', '/api/auth/login', '/api/auth/signup'];
 const TOKEN_COOKIE_NAME = 'stockflow_token';
 
 export function middleware(req: NextRequest) {
@@ -22,12 +22,9 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Root redirect
+  // Public root landing page
   if (pathname === '/') {
-    if (token) {
-      return NextResponse.redirect(new URL('/dashboard', req.url));
-    }
-    return NextResponse.redirect(new URL('/login', req.url));
+    return NextResponse.next();
   }
 
   // Protected pages & APIs
