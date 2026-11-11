@@ -17,7 +17,7 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="https://github.com/Manikanth8910/stockflow-mvp"
               target="_blank"
@@ -28,15 +28,16 @@ export default function HomePage() {
             </Link>
             <Link
               href="/login"
-              className="text-xs font-medium text-zinc-300 hover:text-zinc-100 px-3 py-1.5 transition-colors"
+              className="text-xs font-medium text-zinc-300 hover:text-zinc-100 px-2 sm:px-3 py-1.5 transition-colors"
             >
               Sign In
             </Link>
             <Link
               href="/signup"
-              className="text-xs font-semibold bg-zinc-100 hover:bg-white text-zinc-950 px-3.5 py-1.5 rounded-lg transition-colors shadow-sm"
+              className="text-xs font-semibold bg-zinc-100 hover:bg-white text-zinc-950 px-2.5 sm:px-3.5 py-1.5 rounded-lg transition-colors shadow-sm shrink-0"
             >
-              Create Organization
+              <span className="hidden xs:inline">Create Organization</span>
+              <span className="xs:hidden">Get Started</span>
             </Link>
           </div>
         </div>
