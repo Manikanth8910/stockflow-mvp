@@ -12,7 +12,8 @@ export function middleware(req: NextRequest) {
   const isPublicAuthApi = pathname.startsWith('/api/auth/login') || pathname.startsWith('/api/auth/signup');
 
   if (isPublicAuthPage) {
-    if (token) {
+    // Only redirect /login to dashboard if token exists; allow /signup so users can register new accounts
+    if (token && pathname === '/login') {
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
     return NextResponse.next();

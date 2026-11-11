@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -13,10 +13,31 @@ import {
   DollarSign,
   ChevronDown,
   ChevronUp,
+  LogOut,
 } from 'lucide-react';
 
 export default function HomePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ email: string; name?: string } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user) setCurrentUser(data.user);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setCurrentUser(null);
+      window.location.reload();
+    } catch {
+      window.location.href = '/login';
+    }
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -46,18 +67,42 @@ export default function HomePage() {
             >
               <Github className="w-4 h-4" />
             </Link>
-            <Link
-              href="/login"
-              className="text-xs font-medium text-zinc-300 hover:text-zinc-100 px-2.5 sm:px-3 py-1.5 transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/signup"
-              className="text-xs font-semibold bg-zinc-100 hover:bg-white text-zinc-950 px-3 sm:px-3.5 py-1.5 rounded-lg transition-colors shadow-sm shrink-0"
-            >
-              Get Started
-            </Link>
+
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-400 hidden sm:inline font-mono">
+                  {currentUser.email}
+                </span>
+                <Link
+                  href="/dashboard"
+                  className="text-xs font-semibold bg-zinc-100 hover:bg-white text-zinc-950 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                >
+                  Dashboard →
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs text-zinc-400 hover:text-red-400 px-2 py-1.5 transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-xs font-medium text-zinc-300 hover:text-zinc-100 px-2.5 sm:px-3 py-1.5 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="text-xs font-semibold bg-zinc-100 hover:bg-white text-zinc-950 px-3 sm:px-3.5 py-1.5 rounded-lg transition-colors shadow-sm shrink-0"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -100,19 +145,45 @@ export default function HomePage() {
           transition={{ duration: 0.35, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16"
         >
-          <Link
-            href="/login"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-all text-xs active:scale-[0.98]"
-          >
-            <span>Launch Demo Workspace</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-          <Link
-            href="/signup"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-lg border border-zinc-800 transition-all text-xs"
-          >
-            <span>Create Account</span>
-          </Link>
+          {currentUser ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-all text-xs active:scale-[0.98]"
+              >
+                <span>Go to Dashboard</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                href="/signup"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-lg border border-zinc-800 transition-all text-xs"
+              >
+                <span>Create New Account</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-zinc-400 hover:text-red-400 font-medium px-3 py-2 text-xs transition-colors"
+              >
+                <span>Sign Out ({currentUser.email})</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold px-5 py-2.5 rounded-lg shadow-sm transition-all text-xs active:scale-[0.98]"
+              >
+                <span>Launch Demo Workspace</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                href="/signup"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-lg border border-zinc-800 transition-all text-xs"
+              >
+                <span>Create Account</span>
+              </Link>
+            </>
+          )}
         </motion.div>
 
         {/* 3. Core Highlights Grid */}
