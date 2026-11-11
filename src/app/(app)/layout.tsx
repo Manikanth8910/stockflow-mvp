@@ -12,6 +12,7 @@ import {
   Building2,
   Loader2,
   ChevronDown,
+  Plus,
 } from 'lucide-react';
 import { SessionUser } from '@/lib/types';
 
@@ -31,11 +32,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       .then((data) => {
         setUser(data.user);
         setLoading(false);
+        if (!data.user?.organizationId && pathname !== '/organizations/new') {
+          router.push('/organizations/new');
+        }
       })
       .catch(() => {
         router.push('/login');
       });
-  }, [router]);
+  }, [router, pathname]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -93,22 +97,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Tenant Organization Indicator */}
         <div className="p-3 border-b border-zinc-800/60">
-          <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/40 border border-zinc-700/40 hover:bg-zinc-800/70 transition-colors cursor-default">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/40 border border-zinc-700/40 hover:bg-zinc-800/70 transition-colors">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-6 h-6 rounded bg-zinc-700/60 flex items-center justify-center text-zinc-300 shrink-0">
                 <Building2 className="w-3.5 h-3.5" />
               </div>
               <div className="overflow-hidden">
                 <p className="text-xs font-medium text-zinc-200 truncate leading-tight">
-                  {user?.organizationName || 'Default Org'}
+                  {user?.organizationName || 'No Organization'}
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="text-[10px] font-mono text-zinc-400">Production</span>
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${user?.organizationId ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                  <span className="text-[10px] font-mono text-zinc-400">
+                    {user?.organizationId ? 'Production' : 'Setup Required'}
+                  </span>
                 </div>
               </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+            <Link
+              href="/organizations/new"
+              title="Create new organization"
+              className="p-1 rounded hover:bg-zinc-700/60 text-zinc-400 hover:text-zinc-200 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 

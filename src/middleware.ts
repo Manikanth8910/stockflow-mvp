@@ -31,14 +31,16 @@ export function middleware(req: NextRequest) {
   const isProtectedPage =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/products') ||
-    pathname.startsWith('/settings');
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/organizations');
 
   const isProtectedApi =
     pathname.startsWith('/api/products') ||
     pathname.startsWith('/api/dashboard') ||
     pathname.startsWith('/api/settings') ||
     pathname.startsWith('/api/seed') ||
-    pathname.startsWith('/api/auth/me');
+    pathname.startsWith('/api/auth/me') ||
+    pathname.startsWith('/api/organizations');
 
   if (!token) {
     if (isProtectedApi) {

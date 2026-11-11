@@ -16,7 +16,7 @@ export async function comparePassword(password: string, hash: string): Promise<b
   return bcrypt.compare(password, hash);
 }
 
-export function signToken(payload: { userId: string; email: string; organizationId: string }): string {
+export function signToken(payload: { userId: string; email: string; organizationId?: string | null }): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
 }
 
@@ -58,14 +58,14 @@ export async function getSessionUser(req?: NextRequest): Promise<SessionUser | n
     include: { organization: true },
   });
 
-  if (!user || !user.organization) return null;
+  if (!user) return null;
 
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    organizationId: user.organizationId,
-    organizationName: user.organization.name,
-    defaultLowStockThreshold: user.organization.defaultLowStockThreshold,
+    organizationId: user.organizationId || null,
+    organizationName: user.organization?.name || null,
+    defaultLowStockThreshold: user.organization?.defaultLowStockThreshold || 5,
   };
 }

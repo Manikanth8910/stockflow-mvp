@@ -4,14 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Layers, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Layers, ArrowRight, AlertCircle, Loader2, Shield } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    organizationName: '',
     password: '',
     confirmPassword: '',
   });
@@ -45,7 +44,6 @@ export default function SignupPage() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          organizationName: formData.organizationName,
           password: formData.password,
         }),
       });
@@ -53,10 +51,11 @@ export default function SignupPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to create organization');
+        throw new Error(data.error || 'Failed to create user account');
       }
 
-      router.push('/dashboard');
+      // User account created and signed in! Now take them to create organization
+      router.push('/organizations/new');
       router.refresh();
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred');
@@ -79,10 +78,10 @@ export default function SignupPage() {
           <span className="font-semibold text-base tracking-tight text-zinc-100">StockFlow</span>
         </Link>
         <h2 className="text-center text-xl font-semibold tracking-tight text-zinc-100">
-          Create an organization
+          Create your account
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-400">
-          Set up a new isolated multi-tenant inventory workspace
+          Register your credentials first. Once signed in, you will create your organization.
         </p>
       </motion.div>
 
@@ -101,21 +100,6 @@ export default function SignupPage() {
           )}
 
           <form className="space-y-3.5" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Organization name
-              </label>
-              <input
-                type="text"
-                name="organizationName"
-                required
-                value={formData.organizationName}
-                onChange={handleChange}
-                placeholder="e.g. Apex Hardware Supplies"
-                className="w-full px-3 py-2 bg-zinc-800/80 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors"
-              />
-            </div>
-
             <div>
               <label className="block text-xs font-medium text-zinc-300 mb-1">
                 Your full name
@@ -183,11 +167,11 @@ export default function SignupPage() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Provisioning workspace...
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Creating account...
                   </>
                 ) : (
                   <>
-                    Create organization <ArrowRight className="w-3.5 h-3.5" />
+                    Create account & continue <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
               </button>

@@ -10,8 +10,8 @@ interface Params {
 
 export async function GET(req: NextRequest, { params }: Params) {
   const session = await getSessionUser(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.organizationId) {
+    return NextResponse.json({ error: 'Unauthorized or no active organization' }, { status: 401 });
   }
 
   try {
@@ -47,8 +47,8 @@ export async function GET(req: NextRequest, { params }: Params) {
 
 export async function PUT(req: NextRequest, { params }: Params) {
   const session = await getSessionUser(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.organizationId) {
+    return NextResponse.json({ error: 'Unauthorized or no active organization' }, { status: 401 });
   }
 
   try {
@@ -164,8 +164,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
 export async function DELETE(req: NextRequest, { params }: Params) {
   const session = await getSessionUser(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.organizationId) {
+    return NextResponse.json({ error: 'Unauthorized or no active organization' }, { status: 401 });
   }
 
   try {

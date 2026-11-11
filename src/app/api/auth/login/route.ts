@@ -48,9 +48,9 @@ export async function POST(req: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.name,
-        organizationId: user.organization.id,
-        organizationName: user.organization.name,
-        defaultLowStockThreshold: user.organization.defaultLowStockThreshold,
+        organizationId: user.organization ? user.organization.id : null,
+        organizationName: user.organization ? user.organization.name : null,
+        defaultLowStockThreshold: user.organization ? user.organization.defaultLowStockThreshold : 5,
       },
     });
 

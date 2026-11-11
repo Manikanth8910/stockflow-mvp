@@ -56,8 +56,7 @@ export default function HomePage() {
               href="/signup"
               className="text-xs font-semibold bg-zinc-100 hover:bg-white text-zinc-950 px-3 sm:px-3.5 py-1.5 rounded-lg transition-colors shadow-sm shrink-0"
             >
-              <span className="hidden xs:inline">Create Organization</span>
-              <span className="xs:hidden">Get Started</span>
+              Get Started
             </Link>
           </div>
         </div>
@@ -112,7 +111,7 @@ export default function HomePage() {
             href="/signup"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-lg border border-zinc-800 transition-all text-xs"
           >
-            <span>Register New Organization</span>
+            <span>Create Account</span>
           </Link>
         </motion.div>
 

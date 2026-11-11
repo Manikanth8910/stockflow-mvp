@@ -4,8 +4,8 @@ import { getSessionUser } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   const session = await getSessionUser(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.organizationId) {
+    return NextResponse.json({ error: 'Unauthorized or no active organization' }, { status: 401 });
   }
 
   const { searchParams } = new URL(req.url);
@@ -65,8 +65,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await getSessionUser(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.organizationId) {
+    return NextResponse.json({ error: 'Unauthorized or no active organization' }, { status: 401 });
   }
 
   try {

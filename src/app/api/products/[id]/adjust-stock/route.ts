@@ -10,15 +10,17 @@ interface Params {
 
 export async function POST(req: NextRequest, { params }: Params) {
   const session = await getSessionUser(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.organizationId) {
+    return NextResponse.json({ error: 'Unauthorized or no active organization' }, { status: 401 });
   }
+
+  const organizationId = session.organizationId;
 
   try {
     const existing = await prisma.product.findFirst({
       where: {
         id: params.id,
-        organizationId: session.organizationId,
+        organizationId,
       },
     });
 
@@ -58,7 +60,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
       const log = await tx.stockAdjustmentLog.create({
         data: {
-          organizationId: session.organizationId,
+          organizationId,
           productId: existing.id,
           quantityChange: delta,
           previousQuantity: existing.quantityOnHand,

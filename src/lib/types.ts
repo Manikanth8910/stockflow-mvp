@@ -2,15 +2,15 @@ export interface SessionUser {
   id: string;
   email: string;
   name?: string | null;
-  organizationId: string;
-  organizationName: string;
-  defaultLowStockThreshold: number;
+  organizationId?: string | null;
+  organizationName?: string | null;
+  defaultLowStockThreshold?: number;
 }
 
 export interface JWTPayload {
   userId: string;
   email: string;
-  organizationId: string;
+  organizationId?: string | null;
   iat?: number;
   exp?: number;
 }

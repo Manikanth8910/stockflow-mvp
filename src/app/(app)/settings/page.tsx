@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Building2,
   Sliders,
@@ -10,6 +11,7 @@ import {
   Database,
   Shield,
   Layers,
+  Plus,
 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -205,6 +207,25 @@ export default function SettingsPage() {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Organizations Management */}
+      <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-100">Multi-Tenant Workspaces</h3>
+            <p className="text-xs text-zinc-400 mt-1 max-w-md">
+              Need another isolated catalog for a different subsidiary, client, or warehouse entity? You can create a new organization while signed in.
+            </p>
+          </div>
+          <Link
+            href="/organizations/new"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 text-xs font-semibold transition-colors shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Create New Organization</span>
+          </Link>
+        </div>
       </div>
 
       {/* Developer & Evaluator Tools */}

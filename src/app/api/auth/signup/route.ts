@@ -8,9 +8,9 @@ export async function POST(req: NextRequest) {
     const { email, password, organizationName, name } = body;
 
     // Validation
-    if (!email || !password || !organizationName) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email, password, and organization name are required' },
+        { error: 'Email and password are required' },
         { status: 400 }
       );
     }
@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const orgNameTrimmed = organizationName.trim();
-    if (orgNameTrimmed.length < 2) {
+    const orgNameTrimmed = organizationName ? organizationName.trim() : '';
+    if (organizationName && orgNameTrimmed.length < 2) {
       return NextResponse.json(
         { error: 'Organization name must be at least 2 characters long' },
         { status: 400 }
@@ -50,42 +50,85 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await hashPassword(password);
 
-    // Create organization and user in transaction
-    const result = await prisma.$transaction(async (tx) => {
-      const org = await tx.organization.create({
-        data: {
-          name: orgNameTrimmed,
-          defaultLowStockThreshold: 5,
+    // If organizationName provided, create both atomically in a transaction
+    if (orgNameTrimmed) {
+      const result = await prisma.$transaction(async (tx) => {
+        const org = await tx.organization.create({
+          data: {
+            name: orgNameTrimmed,
+            defaultLowStockThreshold: 5,
+          },
+        });
+
+        const user = await tx.user.create({
+          data: {
+            email: emailTrimmed,
+            passwordHash,
+            name: name ? name.trim() : emailTrimmed.split('@')[0],
+            organizationId: org.id,
+          },
+        });
+
+        return { user, org };
+      });
+
+      const token = signToken({
+        userId: result.user.id,
+        email: result.user.email,
+        organizationId: result.org.id,
+      });
+
+      const response = NextResponse.json({
+        success: true,
+        user: {
+          id: result.user.id,
+          email: result.user.email,
+          name: result.user.name,
+          organizationId: result.org.id,
+          organizationName: result.org.name,
+          defaultLowStockThreshold: result.org.defaultLowStockThreshold,
         },
       });
 
-      const user = await tx.user.create({
-        data: {
-          email: emailTrimmed,
-          passwordHash,
-          name: name ? name.trim() : emailTrimmed.split('@')[0],
-          organizationId: org.id,
-        },
+      response.cookies.set({
+        name: TOKEN_COOKIE_NAME,
+        value: token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
       });
 
-      return { user, org };
+      return response;
+    }
+
+    // Otherwise, create user account first; user can create organization once signed in
+    const user = await prisma.user.create({
+      data: {
+        email: emailTrimmed,
+        passwordHash,
+        name: name ? name.trim() : emailTrimmed.split('@')[0],
+        organizationId: null,
+      },
     });
 
     const token = signToken({
-      userId: result.user.id,
-      email: result.user.email,
-      organizationId: result.org.id,
+      userId: user.id,
+      email: user.email,
+      organizationId: null,
     });
 
     const response = NextResponse.json({
       success: true,
+      needsOrganization: true,
+      redirectTo: '/organizations/new',
       user: {
-        id: result.user.id,
-        email: result.user.email,
-        name: result.user.name,
-        organizationId: result.org.id,
-        organizationName: result.org.name,
-        defaultLowStockThreshold: result.org.defaultLowStockThreshold,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        organizationId: null,
+        organizationName: null,
       },
     });
 
@@ -96,7 +139,7 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return response;
